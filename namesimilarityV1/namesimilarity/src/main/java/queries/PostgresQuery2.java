@@ -17,15 +17,12 @@ public class PostgresQuery2 {
     private static final String USER = "postgres";
     private static final String PASSWORD = "admin123";
 
+//    private static final String URL = "jdbc:postgresql://194.163.150.172:5434/postgres_db";
+//    private static final String USER = "postgres";
+//    private static final String PASSWORD = "postgres";
+
     public static void main(String[] args) {
 
-        if (args.length < 2) {
-            System.out.println("Usage: java -jar myapp.jar <inputFile> <outputDir>");
-            System.exit(1);
-        }
-
-        String inputFile = args[0];
-        String outputDir = args[1];
 
         String sql =
                 "WITH input_tokens AS ( " +
@@ -64,43 +61,51 @@ public class PostgresQuery2 {
                         "LIMIT 3000";
 
 
-        try {
-			FileInputStream fis = new FileInputStream(new File(inputFile));
+        String InputExcelFilePath = "/Users/10Decoders/Desktop/Projects/ExcelScript/TEST_3000.xlsx";
+
+
+
+
+		try {
+			FileInputStream fis = new FileInputStream(new File(InputExcelFilePath));
 			Workbook workbook = new XSSFWorkbook(fis);
-			Sheet sheet = workbook.getSheetAt(0); 
+			Sheet sheet = workbook.getSheetAt(0);
 			Integer times = 1;
             boolean isFirstRow = true;
+            int count = 0;
             for (Row row : sheet) {
                 if (isFirstRow) {
                     isFirstRow = false;
                     continue; // skip header
                 }
-				Cell cell = row.getCell(0); 
+				Cell cell = row.getCell(0);
 				if (cell != null) {
 					String inputName = cell.getStringCellValue().trim();
-					String safeSheetName = inputName.replaceAll("[\\\\/?*\\[\\]:]", "");
-					System.out.println("Processing: " + safeSheetName);
-					checkSimiliarity(safeSheetName,sql);
+                    String safeSheetName = inputName.replaceAll("[\\\\/?*\\[\\]:]", "");
+                    count++; // increment counter
+                    System.out.println(count + ". Processing: " + safeSheetName);
+                    checkSimiliarity(safeSheetName, sql);
 					times++;
 				}
 			}
 
 			workbook.close();
 			fis.close();
-			
+
 			System.out.println("Neo4j Results Write Completed In Excel");
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-  
-    }
-    
-    
-    
-	private static void checkSimiliarity(String inputName, String sql, String outPutDir) {
 
-        List<String[]> results = new ArrayList<>();
+    }
+
+
+
+	private static void checkSimiliarity(String inputName, String sql) {
+
+		String filePath = "/Users/10Decoders/Desktop/Projects/ExcelScript/matched_results.xlsx";
+		List<String[]> results = new ArrayList<>();
 
 		try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
 				PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -108,11 +113,11 @@ public class PostgresQuery2 {
             String[] tokens = inputName.toLowerCase().split("\\s+"); // split by one or more spaces
             int tokenCount = tokens.length;
 
-			stmt.setString(1, inputName.toLowerCase());  
+			stmt.setString(1, inputName.toLowerCase());
 			stmt.setString(2, inputName.toLowerCase());
             stmt.setInt(3, tokenCount);
             stmt.setInt(4, tokenCount);
-			
+
 			try (ResultSet rs = stmt.executeQuery()) {
 				while (rs.next()) {
 					String sdnname = rs.getString("sdnname");
@@ -128,12 +133,12 @@ public class PostgresQuery2 {
 			e.printStackTrace();
 		}
 
-		writeResultsToExcel(outPutDir, inputName, results);
+		writeResultsToExcel(filePath, inputName, results);
 
 	}
 
-	
-	
+
+
 //    private static void writeResultsToExcel(String filePath, String sheetName, List<String[]> results) {
 //        try (FileInputStream fis = new FileInputStream(filePath);
 //
