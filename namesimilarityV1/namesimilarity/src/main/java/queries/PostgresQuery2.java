@@ -78,8 +78,9 @@ public class PostgresQuery2 {
 				Cell cell = row.getCell(0); 
 				if (cell != null) {
 					String inputName = cell.getStringCellValue().trim();
-					System.out.println("Processing: " + inputName);
-					checkSimiliarity(inputName,sql, outputDir);
+					String safeSheetName = inputName.replaceAll("[\\\\/?*\\[\\]:]", "");
+					System.out.println("Processing: " + safeSheetName);
+					checkSimiliarity(safeSheetName,sql);
 					times++;
 				}
 			}
