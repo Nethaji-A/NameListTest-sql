@@ -23,6 +23,14 @@ public class PostgresQuery2 {
 
     public static void main(String[] args) {
 
+		 if (args.length < 2) {
+            System.out.println("Usage: java -jar myapp.jar <inputFile> <outputDir>");
+            System.exit(1);
+        }
+
+        String inputFile = args[0];
+        String outputDir = args[1];
+
 
         String sql =
                 "WITH input_tokens AS ( " +
@@ -67,7 +75,7 @@ public class PostgresQuery2 {
 
 
 		try {
-			FileInputStream fis = new FileInputStream(new File(InputExcelFilePath));
+			FileInputStream fis = new FileInputStream(new File(inputFile));
 			Workbook workbook = new XSSFWorkbook(fis);
 			Sheet sheet = workbook.getSheetAt(0);
 			Integer times = 1;
@@ -84,7 +92,7 @@ public class PostgresQuery2 {
                     String safeSheetName = inputName.replaceAll("[\\\\/?*\\[\\]:]", "");
                     count++; // increment counter
                     System.out.println(count + ". Processing: " + safeSheetName);
-                    checkSimiliarity(safeSheetName, sql);
+                    checkSimiliarity(safeSheetName, sql, outputDir);
 					times++;
 				}
 			}
@@ -102,7 +110,7 @@ public class PostgresQuery2 {
 
 
 
-	private static void checkSimiliarity(String inputName, String sql) {
+	private static void checkSimiliarity(String inputName, String sql, String outputDir) {
 
 		String filePath = "/Users/10Decoders/Desktop/Projects/ExcelScript/matched_results.xlsx";
 		List<String[]> results = new ArrayList<>();
@@ -133,7 +141,7 @@ public class PostgresQuery2 {
 			e.printStackTrace();
 		}
 
-		writeResultsToExcel(filePath, inputName, results);
+		writeResultsToExcel(outputDir, inputName, results);
 
 	}
 
