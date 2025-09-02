@@ -13,9 +13,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class PostgresQuery2 {
 
-    private static final String URL = "jdbc:postgresql://38.242.220.73:5433/postgres";
-    private static final String USER = "postgres";
-    private static final String PASSWORD = "admin123";
+    // private static final String URL = "jdbc:postgresql://38.242.220.73:5433/postgres";
+    // private static final String USER = "postgres";
+    // private static final String PASSWORD = "admin123";
+
+	private static final String URL = "jdbc:postgresql://screening-db:5432/postgres";
+	private static final String USER = "postgres";
+	private static final String PASSWORD = "admin123";
 
 //    private static final String URL = "jdbc:postgresql://194.163.150.172:5434/postgres_db";
 //    private static final String USER = "postgres";
