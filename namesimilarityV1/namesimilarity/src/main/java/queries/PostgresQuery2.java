@@ -36,19 +36,15 @@ public class PostgresQuery2 {
         String outputDir = args[1];
 
 
-        String sql =
+       String sql =
                 "WITH input_tokens AS ( " +
                         "    SELECT unnest(string_to_array(lower(?), ' ')) AS token " +
-                        "), " +
-                        "candidate_rows2 AS ( " +
-                        "    SELECT * " +
-                        "    FROM sanction_active sa " +
-                        "    WHERE sa.type = 'Person' " +
                         "), " +
                         "candidate_rows AS ( " +
                         "    SELECT * " +
                         "    FROM sanction_active sa " +
-                        "    WHERE sa.sdnname % ? " +
+                        "    WHERE sa.type IN ('Person', 'SOCPerson')" +
+                        "      AND sa.sdnname % ? " +
                         "), " +
                         "matched AS ( " +
                         "    SELECT c.sdnname, " +
@@ -69,8 +65,7 @@ public class PostgresQuery2 {
                         "FROM matched " +
                         "GROUP BY sdnname, sanction_id, sdnname_tokens_count " +
                         "HAVING (sdnname_tokens_count + ?) - (COUNT(DISTINCT input_token) * 2) <= 3 " +
-                        "ORDER BY matched_input_tokens DESC, sdnname_tokens_count ASC " +
-                        "LIMIT 3000";
+                        "ORDER BY matched_input_tokens DESC, sdnname_tokens_count ASC;";
 
 
         String InputExcelFilePath = "/Users/10Decoders/Desktop/Projects/ExcelScript/TEST_3000.xlsx";
